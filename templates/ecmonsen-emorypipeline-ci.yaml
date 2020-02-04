@@ -38,6 +38,23 @@ Resources:
         - Key: "OwnerEmail"
           Value: !Ref OwnerEmail
 
+  # Allow public read on lambda bucket so that build users can read from it
+  # Same as bootstrap bucket https://github.com/Sage-Bionetworks/aws-infra/blob/206c4b0ecafc8966561a2bfb3adfeb9ffa872048/templates/bootstrap.yaml#L66
+  LambdaArtifactsBucketBucketPolicy:
+    Type: "AWS::S3::BucketPolicy"
+    Properties:
+      Bucket: !Ref LambdaArtifactsBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Sid: "AllowPublicRead"
+            Effect: "Allow"
+            Principal:
+              AWS: "*"
+            Action: "s3:GetObject"
+            Resource: !Sub "arn:aws:s3:::${LambdaArtifactsBucket}/*"
+
   CfnDeployerServiceUser:
     Type: 'AWS::IAM::User'
   CfnDeployerServiceUserAccessKey:
@@ -66,12 +83,28 @@ Resources:
       PolicyDocument:
         Version: "2012-10-17"
         Statement:
-          - Sid: "LambdaArtifactsBucketFullAccess"
-            Action:
-              - s3:*
+          - Action:
+              - s3:ListBucket
+              - s3:GetBucketLocation
             Effect: Allow
-            Resource: !GetAtt LambdaArtifactsBucket.Arn
-
+            Resource: !Sub "arn:aws:s3:::${LambdaArtifactsBucket}"
+          - Action:
+              - s3:PutObject
+              - s3:PutObjectAcl
+              - s3:GetObject
+              - s3:GetObjectAcl
+              - s3:DeleteObject
+            Effect: Allow
+            Resource: !Sub "arn:aws:s3:::${LambdaArtifactsBucket}/*"
+          # "sam validate" requires ListPolicies permissions
+          # see the reason here:
+          # https://github.com/awslabs/serverless-application-model/blob/9de1f6a99d9b62277ad6debe3a391a040d02564a/samtranslator/translator/managed_policy_translator.py#L8
+          - Sid: "ListAWSManagedPolicies"
+            Action:
+              - iam:ListPolicies
+            Effect: Allow
+            Resource:
+              - "*"
 Outputs:
   LambdaArtifactsBucketName:
     Value: !Ref LambdaArtifactsBucket

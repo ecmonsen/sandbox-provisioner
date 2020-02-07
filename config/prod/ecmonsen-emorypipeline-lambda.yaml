@@ -17,6 +17,9 @@ hooks:
     # and its current value is in ../config.yaml
 
     # The following command gets the lambda artifacts bucket name from the dependency stack (echoing it for logging)
-    - !cmd curl -sw "%{url_effective}\n" https://ecmonsen-emorypipeline-ci-lambdaartifactsbucket-nu5xkcp8vax4.s3.amazonaws.com/lambda-uploader/develop/ecmonsen-emorypipeline-lambda.yaml --create-dirs -o templates/remote/ecmonsen-emorypipeline-lambda.yaml
+    #
+    # Note the "master" branch always contains the latest successful build. When deploying to production the path
+    # should be changed to use "vX.X.X" to deploy from tag vX.X.X
+    - !cmd curl -sw "%{url_effective}\n" https://ecmonsen-emorypipeline-ci-lambdaartifactsbucket-nu5xkcp8vax4.s3.amazonaws.com/lambda-uploader/master/ecmonsen-emorypipeline-lambda.yaml --create-dirs -o templates/remote/ecmonsen-emorypipeline-lambda.yaml
   before_update:
-    - !cmd curl -sw "%{url_effective}\n" https://ecmonsen-emorypipeline-ci-lambdaartifactsbucket-nu5xkcp8vax4.s3.amazonaws.com/lambda-uploader/develop/ecmonsen-emorypipeline-lambda.yaml --create-dirs -o templates/remote/ecmonsen-emorypipeline-lambda.yaml
+    - !cmd curl -sw "%{url_effective}\n" https://ecmonsen-emorypipeline-ci-lambdaartifactsbucket-nu5xkcp8vax4.s3.amazonaws.com/lambda-uploader/master/ecmonsen-emorypipeline-lambda.yaml --create-dirs -o templates/remote/ecmonsen-emorypipeline-lambda.yaml

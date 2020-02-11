@@ -1,4 +1,5 @@
 template_path: "remote/ecmonsen-emorypipeline-lambda.yaml"
+# Note stack name must be 43 chars or less, otherwise bucket name is too long and CloudFormation fails
 stack_name: "ecmonsen-emorypipeline-lambda"
 dependencies:
   - prod/ecmonsen-emorypipeline-ci.yaml
@@ -13,8 +14,6 @@ hooks:
   before_create:
     # Note: After Sep 30, 2020 only "virtual-hosted" bucket URLs (beginning with https://<bucketname>.s3.amazonaws.com)
     # are supported. See https://aws.amazon.com/blogs/aws/amazon-s3-path-deprecation-plan-the-rest-of-the-story/
-    # Note: ecmonsen_emorypipeline_ci_code_bucket is the bucket created in the ecmonsen-emorypipeline-ci stack
-    # and its current value is in ../config.yaml
 
     # The following command gets the lambda artifacts bucket name from the dependency stack (echoing it for logging)
     #
